@@ -1,14 +1,25 @@
 class Punto:
-    def __init__(self, x, y):
+    
+    #Punto al infinito
+    infinite_point = None
+    
+    def __init__(self, x = 0, y = 0):
         self.x = x
         self.y = y
 
     def __str__(self):
-        return f"Punto({self.x}, {self.y})"
+        return f"({self.x}, {self.y})"
 
-    def equals(self, otro_punto):
-        return self.x == otro_punto.x and self.y == otro_punto.y
+    def __repr__(self):
+        return self.__str__()
+
+    def __eq__(self, another_point):
+        if not another_point:
+            return False
+        return self.x == another_point.x and self.y == another_point.y
 
     def set(self, x, y):
+        '''Define los valores de x y y a este punto'''
         self.x = x
         self.y = y
+
