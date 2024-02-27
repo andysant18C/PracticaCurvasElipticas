@@ -20,7 +20,11 @@ class Entidad:
     def cifrar(self, mensaje, tabla):
         #print(f"CIFRADO DE MENSAJE {mensaje}")
         mensaje_cifrado = []
+        #random_n = [8,12,19,2,3,23] Se usa para probar el ejemplo
+        #cont = 0
         for caracter in mensaje:
+            #r = random_n[cont] Se usa para probar el ejemplo
+            #cont+=1
             r = random.randint(1, self.orden_G)
             #print(f"{caracter} cifrado como:")
             #print(f"rand = {r}")
@@ -28,10 +32,15 @@ class Entidad:
             # e1 = r(C)
             e1 = self.curva.mult(r, self.G)
             caracter_e1 =self.obtener_caracter(tabla,e1) 
+            
             #print(f"{caracter} {e1}  {caracter_e1}\n", end="")
             # e2 = M + (β + r)A1 − r(A2) + Ae
             M = tabla[caracter]
-            e2 = self.curva.suma(M, self.curva.suma(self.curva.mult(r, self.pks[0]), self.curva.suma(self.pks[1], self.pks[2])))
+            beta_r_A1 = self.curva.mult(self.llave_privada+r, self.llaves_recibidas[0])
+            r_A2 = self.curva.mult(r, self.llaves_recibidas[1])
+            e2 = self.curva.suma(M, beta_r_A1)
+            e2 = self.curva.resta(e2,r_A2)
+            e2 = self.curva.suma(e2,self.llaves_recibidas[2])
             caracter_e2 = self.obtener_caracter(tabla,e2) 
             #print(f"{caracter} {e2}  {caracter_e2}\n", end="")
 

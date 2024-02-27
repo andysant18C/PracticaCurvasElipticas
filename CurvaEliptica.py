@@ -49,6 +49,15 @@ class CurvaEliptica:
         x3 = (lam ** 2 - p.x - q.x) % self.p
         y3 = (lam * (p.x - x3) - p.y) % self.p
         return Punto(x3, y3)
+    
+    def resta(self, p, q):
+        # Calcular el inverso aditivo de q
+        q_inverso = self.inv(q)
+        
+        # Realizar la suma P + (-Q)
+        resultado = self.suma(p, q_inverso)
+        
+        return resultado
 
     def mult(self, k, punto):
         if k == 0:

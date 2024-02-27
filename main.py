@@ -90,19 +90,26 @@ def main():
     bob.recibeLlavesPublicas(allice.pks)
     #print(f"\nBob recibe las llaves de Allice y son: {bob.llaves_recibidas}")
 
-    allice_pks = allice.llavesFinales()
-    #print(f"\nLlaves finales de Allice {allice_pks}")
+    allice.llavesFinales()
+    #print(f"\nLlaves finales de Allice {allice.pks}")
     #print("\nLlaves Publicas de Allice:", allice.pks)
-    bob_pks = bob.llavesFinales()
-    #print(f"\nLlaves finales de Bob{bob_pks}")
-    #print(f"\nLlave final de Bob {bob.pks}")
+    bob.llavesFinales()
+    #print(f"\nLlaves finales de Bob{bob.pks}")
     # Intercambiamos la última clave de cada uno
-    allice.pks[2], bob.pks[2] = bob.pks[2] ,allice.pks[2] 
+    #allice.pks[2], bob.pks[2] = bob.pks[2] ,allice.pks[2] 
+    # Allice recibe la ultima llave de Bob
+    allice.llaves_recibidas.append(bob.pks[2])
+    #allice.recibeLlavesPublicas(bob.pks)
+    # Bob recibe la ultima llave de Allice
+    bob.llaves_recibidas.append(allice.pks[2])
     print("\nLlaves Públicas FINALES de Allice:", allice.pks)
+    print("\n Llaves recibidas de allice: ",allice.llaves_recibidas)
     print("\nLlaves Públicas FINALES de BOB:", bob.pks)
+    print("\n Llaves recibidas de bob: ",bob.llaves_recibidas)
     # Bob cifra el mensaje 'Attack'
     mensaje_cifrado_bob = bob.cifrar('attack',tabla)
     print(f"Mensaje cifrado por BOB: {mensaje_cifrado_bob}")
+    
     
 if __name__ == "__main__":
     main()
