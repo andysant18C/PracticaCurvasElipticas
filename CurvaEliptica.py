@@ -1,4 +1,5 @@
-import Punto;
+from Punto import Punto
+
 class CurvaEliptica:
     def __init__(self, a, b, p):
         self.a = a
@@ -10,6 +11,8 @@ class CurvaEliptica:
         return f"Curva Eliptica: y^2 = x^3 + {self.a}x + {self.b} (mod {self.p})"
 
     def tiene(self, punto):
+        if punto == self.infinito:
+            return True  # El punto al infinito siempre está en la curva
         return (punto.y ** 2) % self.p == (punto.x ** 3 + self.a * punto.x + self.b) % self.p
 
     def puntos(self):
@@ -48,6 +51,9 @@ class CurvaEliptica:
         return Punto(x3, y3)
 
     def mult(self, k, punto):
+        if k == 0:
+            print("Aqhio")
+            return self.infinito
         resultado = self.infinito
         addend = punto
         while k:

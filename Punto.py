@@ -14,8 +14,13 @@ class Punto:
         return self.__str__()
 
     def __eq__(self, another_point):
+        
         if not another_point:
             return False
+        # Verifica si ambos puntos son infinitos, hay que revisarla para descifrar
+        if self is self.infinite_point and another_point is another_point.infinite_point:
+            return True
+        # Comparar los atributos x e y
         return self.x == another_point.x and self.y == another_point.y
 
     def set(self, x, y):

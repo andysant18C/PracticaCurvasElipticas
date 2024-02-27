@@ -1,33 +1,108 @@
-def main():
-    # Crear una curva elíptica y un punto generador
+from CurvaEliptica import CurvaEliptica
+from Entidad import Entidad
+from Punto import Punto
+
+# Tabla de caracteres
+tabla = {
+    '*': Punto.infinite_point,  # Punto al infinito 
+    'a': Punto(5, 25),
+    'b': Punto(1, 30),
+    'c': Punto(21, 32),
+    'd': Punto(7, 25),
+    'e': Punto(25, 12),
+    'f': Punto(4, 28),
+    'g': Punto(0, 34),
+    'h': Punto(16, 17),
+    'i': Punto(15, 26),
+    'j': Punto(27, 32),
+    'k': Punto(9, 4),
+    'l': Punto(2, 24),
+    'm': Punto(26, 5),
+    'n': Punto(33, 14),
+    'o': Punto(11, 17),
+    'p': Punto(31, 22),
+    'q': Punto(13, 30),
+    'r': Punto(35, 21),
+    's': Punto(23, 7),
+    't': Punto(10, 17),
+    'u': Punto(29, 6),
+    'v': Punto(29, 31),
+    'w': Punto(10, 20),
+    'x': Punto(23, 30),
+    'y': Punto(35, 16),
+    'z': Punto(13, 7),
+    '1': Punto(31, 15),
+    '2': Punto(11, 20),
+    '3': Punto(33, 23),
+    '4': Punto(26, 32),
+    '5': Punto(2, 13),
+    '6': Punto(9, 33),
+    '7': Punto(27, 5),
+    '8': Punto(15, 11),
+    '9': Punto(16, 20),
+    '0': Punto(0, 3),
+    '#': Punto(4, 9),
+    '@': Punto(25, 25),
+    '!': Punto(7, 12),
+    '&': Punto(21, 5),
+    '$': Punto(1, 7),
+    '%': Punto(5, 12)
+}
+
+def prueba_curva():
+    # parametros
+    a = 2
+    b = 2
+    p = 17
+    G = Punto(5, 1)
     curva = CurvaEliptica(a, b, p)
-    G = Punto(x, y)
 
-    # Crear dos entidades
-    entidad1 = Entidad("Entidad 1", "Hola, Entidad 2", curva, G, orden_G, tabla)
-    entidad2 = Entidad("Entidad 2", "Hola, Entidad 1", curva, G, orden_G, tabla)
+    print("k | kG | kG en EC?")
+    print("------------------")
+    for k in range(1, 20):
+        kG = curva.mult(k, G)
+        on_curve = curva.tiene(kG)
+        print(f"{k} | {kG} | {on_curve}")
+    print(f"\norden(G) = {curva.orden(G)}")
+    print(f"cofactor(G) = {curva.cofactor(G)}")
+    
 
-    # Generar y compartir llaves públicas
-    llaves_publicas1 = entidad1.generaLlavesPublicas()
-    llaves_publicas2 = entidad2.generaLlavesPublicas()
-    entidad1.recibeLlavesPublicas(llaves_publicas2)
-    entidad2.recibeLlavesPublicas(llaves_publicas1)
+def main():
+    # Curva y punto G
+    curva = CurvaEliptica(2, 9, 37)
+    G = Punto(9, 4)
+    # Puntos fijos de ejemplo
+    punto_allice = Punto(10,20)
+    punto_bob = Punto(11,20)
 
-    # Cifrar y descifrar mensajes
-    mensaje_cifrado1 = entidad1.cifrar()
-    mensaje_cifrado2 = entidad2.cifrar()
-    mensaje_descifrado1 = entidad2.descifrar(mensaje_cifrado1)
-    mensaje_descifrado2 = entidad1.descifrar(mensaje_cifrado2)
+    # Creamos a Allice y Bob
+    allice = Entidad("Allice", "Mensaje secreto de Allice", curva, G, curva.orden(G),5,punto_allice)
+    bob = Entidad("Bob", "Mensaje secreto de Bob", curva, G, curva.orden(G),7,punto_bob)
 
-    # Imprimir los mensajes descifrados
-    print(f"{entidad2.nombre} descifró el mensaje: {mensaje_descifrado1}")
-    print(f"{entidad1.nombre} descifró el mensaje: {mensaje_descifrado2}")
+    # Generamos y compartir llaves publicas de Allice y Bob
+    allice.generaLlavesPublicas()
+    #print(f"\nLlaves publicas de Allice {allice.pks}")
+    bob.generaLlavesPublicas()
+    #print(f"\nLlaves publicas de Bob {bob.pks}")
+    # Allice recibe las llaves publicas de Bob
+    allice.recibeLlavesPublicas(bob.pks)
+    #print(f"\nAllice recibe las llaves de BOB y son: {allice.llaves_recibidas}")
+    bob.recibeLlavesPublicas(allice.pks)
+    #print(f"\nBob recibe las llaves de Allice y son: {bob.llaves_recibidas}")
 
+    allice_pks = allice.llavesFinales()
+    #print(f"\nLlaves finales de Allice {allice_pks}")
+    #print("\nLlaves Publicas de Allice:", allice.pks)
+    bob_pks = bob.llavesFinales()
+    #print(f"\nLlaves finales de Bob{bob_pks}")
+    #print(f"\nLlave final de Bob {bob.pks}")
+    # Intercambiamos la última clave de cada uno
+    allice.pks[2], bob.pks[2] = bob.pks[2] ,allice.pks[2] 
+    print("\nLlaves Públicas FINALES de Allice:", allice.pks)
+    print("\nLlaves Públicas FINALES de BOB:", bob.pks)
+    # Bob cifra el mensaje 'Attack'
+    mensaje_cifrado_bob = bob.cifrar('attack',tabla)
+    print(f"Mensaje cifrado por BOB: {mensaje_cifrado_bob}")
+    
 if __name__ == "__main__":
     main()
-""""
-se debe remplazar a, b, p, x, y, 
-orden_G y tabla con los valores que se esten  utilizando para la curva elíptica y el punto generador.
- se debe  implementar los métodos cifrar y descifrar en la clase Entidad para que este 
- código funcione correctamente
-"""

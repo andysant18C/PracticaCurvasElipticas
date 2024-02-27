@@ -16,13 +16,33 @@ class Entidad:
 
     def __str__(self):
       return f"Entidad: {self.nombre}, Mensaje: {self.mensaje}, Curva Eliptica: {str(self.curva)}, Punto Generador: {str(self.G)}, Orden de G: {self.orden_G}, Llave Privada: {self.llave_privada}, Punto Privado: {str(self.punto_privado)}, Llaves Publicas: {self.pks}, Llaves Recibidas: {self.llaves_recibidas}"
-    def cifrar(self):
-        # Aquí va la implementación de cifrado
-        pass
+  
+    def cifrar(self, mensaje, tabla):
+        #print(f"CIFRADO DE MENSAJE {mensaje}")
+        mensaje_cifrado = []
+        for caracter in mensaje:
+            r = random.randint(1, self.orden_G)
+            #print(f"{caracter} cifrado como:")
+            #print(f"rand = {r}")
+
+            # e1 = r(C)
+            e1 = self.curva.mult(r, self.G)
+            caracter_e1 =self.obtener_caracter(tabla,e1) 
+            #print(f"{caracter} {e1}  {caracter_e1}\n", end="")
+            # e2 = M + (β + r)A1 − r(A2) + Ae
+            M = tabla[caracter]
+            e2 = self.curva.suma(M, self.curva.suma(self.curva.mult(r, self.pks[0]), self.curva.suma(self.pks[1], self.pks[2])))
+            caracter_e2 = self.obtener_caracter(tabla,e2) 
+            #print(f"{caracter} {e2}  {caracter_e2}\n", end="")
+
+            # Agregar los puntos (e1, e2) al mensaje cifrado
+            mensaje_cifrado.append((caracter_e1, caracter_e2))
+
+        #print(f"Mensaje cifrado: {mensaje_cifrado}")
+        return mensaje_cifrado
 
     def descifrar(self, parejas_puntos):
-        # Aquí va la implementación de descifrado
-        pass
+       pass
 
     def generaLlavesPublicas(self):
         C_mas_A = self.curva.suma(self.G, self.punto_privado)
@@ -46,3 +66,9 @@ class Entidad:
           return self.pks
       else:
         raise ValueError("Error: No se han recibido suficientes llaves públicas para generar la llave final.")
+
+    def obtener_caracter(self, diccionario, punto):
+        for key, value in diccionario.items():
+            if value == punto:
+                return key
+        return None
