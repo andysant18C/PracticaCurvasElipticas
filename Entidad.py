@@ -1,4 +1,5 @@
 import random
+
 class Entidad:
     def __init__(self, nombre, mensaje, curva, G, orden_G, llave_privada=None, punto_privado=None):
         self.nombre = nombre
@@ -50,8 +51,42 @@ class Entidad:
         #print(f"Mensaje cifrado: {mensaje_cifrado}")
         return mensaje_cifrado
 
-    def descifrar(self, parejas_puntos):
-       pass
+    def descifrar(self, mensaje_cifrado, tabla):
+        
+        mensaje_descifrado = []
+
+        for tupla in mensaje_cifrado:
+            caracter1 = tupla[0]
+            caracter2 = tupla[1]
+            
+            # M = e2 - (alpha(e1) + alpha(B1) + Be)
+            
+            if caracter1 is None or caracter2 is None:
+                mensaje_descifrado.append(None)
+            else:
+                #Punto e1
+                e1 = tabla[caracter1]
+                #Punto e2
+                e2 = tabla[caracter2]
+
+                alpha_e1 = self.curva.mult(self.llave_privada, e1)
+                alpha_B1 = self.curva.mult(self.llave_privada, self.llaves_recibidas[0])
+
+                a_e1_b1 = self.curva.suma(alpha_e1, alpha_B1)
+                suma_be = self.curva.suma(a_e1_b1, self.llaves_recibidas[2])
+
+                # M 
+                punto_M = self.curva.resta(e2, suma_be)
+                punto_descifrado = self.obtener_caracter(tabla, punto_M)
+
+                print(f"e1: {e1} e2: {e2} B1: {self.llaves_recibidas[0]} Be: {self.llaves_recibidas[2]}")
+                print(f"El punto que corresponde es: {punto_M}")
+                print(f"El punto descifrado final es: {punto_descifrado}")
+                mensaje_descifrado.append(punto_descifrado)
+
+
+        return mensaje_descifrado
+
 
     def generaLlavesPublicas(self):
         C_mas_A = self.curva.suma(self.G, self.punto_privado)
