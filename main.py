@@ -109,6 +109,9 @@ def main():
     # Bob cifra el mensaje 'Attack'
     mensaje_cifrado_bob = bob.cifrar('attack',tabla)
     print(f"Mensaje cifrado por BOB: {mensaje_cifrado_bob}")
+
+    mensaje_descifrado = allice.descifrar(mensaje_cifrado_bob, tabla)
+    print(mensaje_descifrado)
     
     
 if __name__ == "__main__":
